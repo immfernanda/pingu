@@ -22,7 +22,8 @@ let abaAtiva = ABAS[0].id;
 let redeAtiva = REDES[0].id;
 
 // estado do quiz (persiste entre redesenhos)
-let quiz = { ordem: [], i: 0, revelado: false, acertos: 0, errados: [], ativo: false };
+let quiz = { ordem: [], i: 0, acertos: 0, errados: [], ativo: false,
+  respondida: false, selecionada: null, opcoesAtuais: null };
 
 /* ---------- utilidades ---------- */
 function el(tag, className, html) {
@@ -167,10 +168,10 @@ function renderConexoes() {
   $conteudo.appendChild(grid);
 }
 
-/* ---------- CARDS DE ESTUDO (quiz) ---------- */
+/* ---------- CARDS DE ESTUDO (quiz de múltipla escolha) ---------- */
 function renderCards() {
   $conteudo.appendChild(headerSimples("Cards de Estudo",
-    "Tente responder de cabeça, depois revele. Acertou: ótimo. Errou: ótimo também — vai pra revisão."));
+    "Escolha a opção certa. Acertou: ótimo. Errou: a opção certa fica destacada e o card vai pra revisão."));
   const area = el("div");
   area.id = "quiz-area";
   $conteudo.appendChild(area);
@@ -178,7 +179,8 @@ function renderCards() {
 }
 
 function iniciarQuiz(fonte) {
-  quiz = { ordem: embaralhar(fonte), i: 0, revelado: false, acertos: 0, errados: [], ativo: true };
+  quiz = { ordem: embaralhar(fonte), i: 0, acertos: 0, errados: [], ativo: true,
+    respondida: false, selecionada: null, opcoesAtuais: null };
 }
 
 function desenharQuiz(area) {
@@ -188,7 +190,7 @@ function desenharQuiz(area) {
   if (!quiz.ativo && quiz.i === 0) {
     const card = el("div", "card");
     card.appendChild(el("p", null,
-      "São <b>" + CARDS_ESTUDO.length + " cards</b>. A ordem é sorteada a cada rodada."));
+      "São <b>" + CARDS_ESTUDO.length + " cards</b> de múltipla escolha. A ordem e as opções são sorteadas a cada rodada."));
     const btn = el("button", "btn-primario", "Começar ▶");
     btn.onclick = () => { iniciarQuiz(CARDS_ESTUDO); desenharQuiz(area); };
     card.appendChild(btn);
@@ -225,6 +227,12 @@ function desenharQuiz(area) {
   const atual = quiz.ordem[quiz.i];
   const total = quiz.ordem.length;
 
+  // monta e embaralha as opções uma única vez por card
+  if (!quiz.opcoesAtuais) {
+    quiz.opcoesAtuais = embaralhar(atual.opcoes.map((texto, idx) =>
+      ({ texto: texto, correto: idx === atual.correta })));
+  }
+
   const barra = el("div", "quiz-topo");
   barra.appendChild(el("span", "quiz-progresso", "Card " + (quiz.i + 1) + " de " + total));
   barra.appendChild(el("span", "quiz-placar", "✓ " + quiz.acertos + "  ·  📌 " + quiz.errados.length));
@@ -234,26 +242,50 @@ function desenharQuiz(area) {
   card.appendChild(el("div", "fonte", esc(atual.curso)));
   card.appendChild(el("div", "quiz-pergunta", esc(atual.pergunta)));
 
-  if (!quiz.revelado) {
-    const btn = el("button", "btn-primario", "Mostrar resposta");
-    btn.onclick = () => { quiz.revelado = true; desenharQuiz(area); };
-    card.appendChild(btn);
-  } else {
+  const lista = el("div", "quiz-opcoes");
+  quiz.opcoesAtuais.forEach((op, idx) => {
+    let cls = "opcao";
+    if (quiz.respondida) {
+      if (op.correto) cls += " certa";
+      else if (idx === quiz.selecionada) cls += " errada";
+    }
+    const b = el("button", cls);
+    if (quiz.respondida && op.correto) b.innerHTML = esc(op.texto) + " <span class='marca'>✓</span>";
+    else if (quiz.respondida && idx === quiz.selecionada) b.innerHTML = esc(op.texto) + " <span class='marca'>✗</span>";
+    else b.textContent = op.texto;
+    if (quiz.respondida) b.disabled = true;
+    else b.onclick = () => responder(area, idx);
+    lista.appendChild(b);
+  });
+  card.appendChild(lista);
+
+  if (quiz.respondida) {
+    const acertou = quiz.opcoesAtuais[quiz.selecionada].correto;
+    card.appendChild(el("div", "quiz-feedback " + (acertou ? "ok" : "revisar"),
+      acertou ? "Isso! ✓" : "Sem problema — a opção certa está destacada. Vai pra revisão. 📌"));
     card.appendChild(el("div", "quiz-resposta", esc(atual.resposta)));
-    const acoes = el("div", "quiz-acoes");
-    const ok = el("button", "btn-acerto", "Acertei ✓");
-    ok.onclick = () => { quiz.acertos++; avancar(area); };
-    const err = el("button", "btn-erro", "Errei — revisar 📌");
-    err.onclick = () => { quiz.errados.push(atual); avancar(area); };
-    acoes.appendChild(ok);
-    acoes.appendChild(err);
-    card.appendChild(acoes);
+    const prox = el("button", "btn-primario", quiz.i + 1 >= total ? "Ver resultado" : "Próximo →");
+    prox.onclick = () => avancar(area);
+    card.appendChild(prox);
   }
+
   area.appendChild(card);
 }
+
+function responder(area, idx) {
+  if (quiz.respondida) return;
+  quiz.respondida = true;
+  quiz.selecionada = idx;
+  if (quiz.opcoesAtuais[idx].correto) quiz.acertos++;
+  else quiz.errados.push(quiz.ordem[quiz.i]);
+  desenharQuiz(area);
+}
+
 function avancar(area) {
   quiz.i++;
-  quiz.revelado = false;
+  quiz.respondida = false;
+  quiz.selecionada = null;
+  quiz.opcoesAtuais = null;
   desenharQuiz(area);
 }
 

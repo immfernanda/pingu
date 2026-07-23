@@ -316,25 +316,117 @@ const REDES = [
 ];
 
 /* -------------------------------------------------------------------------
-   6) CARDS DE ESTUDO — o modo de teste (flashcards).
-   Você lê a pergunta, tenta responder de cabeça, revela e se avalia.
-   Acertou: ótimo. Errou: ótimo também — vai para a lista de revisão.
-   Para adicionar: inclua { curso, pergunta, resposta } aqui.
+   6) CARDS DE ESTUDO — múltipla escolha.
+   Você lê a pergunta, clica na opção e vê na hora se acertou (a certa fica
+   destacada de qualquer jeito) + a explicação. Acertou: ótimo. Errou: vai
+   para a revisão. As opções são embaralhadas a cada exibição.
+   Para adicionar: { curso, pergunta, opcoes: [...], correta: índice, resposta }.
+   'correta' é o índice (base 0) da opção certa dentro de 'opcoes'.
    ------------------------------------------------------------------------- */
 const CARDS_ESTUDO = [
-  { curso: "Chuva de Vendas", pergunta: "O que é um Lead?", resposta: "Alguém que preencheu um formulário (os dados de uma pessoa). É binário: ou é lead, ou não é." },
-  { curso: "Chuva de Vendas", pergunta: "Qual a diferença entre MQL e SQL?", resposta: "MQL é o lead com o perfil que buscamos (qualificado pelo marketing). SQL é quando o interesse foi validado e ele está pronto para vendas." },
-  { curso: "Chuva de Vendas", pergunta: "O que significa BANT e para que serve?", resposta: "Budget, Autoridade, Necessidade e Timing — 4 informações validadas na pré-venda antes de marcar a reunião." },
-  { curso: "Chuva de Vendas", pergunta: "Lead qualificado é o mesmo que lead quente?", resposta: "Não. Qualificado é sobre PERFIL; quente é sobre TEMPERATURA (momento). Um lead qualificado pode estar frio." },
-  { curso: "Chuva de Vendas", pergunta: "O que caracteriza um lead frio?", resposta: "Não sabe que tem o problema (topo de funil). Tem o perfil certo, mas é mais difícil levar para uma call e vender." },
-  { curso: "Chuva de Vendas", pergunta: "O que é demanda real e como se capta?", resposta: "Quem já busca a solução (fundo de funil). Captada tipicamente por Google Ads, comprando a palavra-chave." },
-  { curso: "Chuva de Vendas", pergunta: "Qual o maior problema da demanda real?", resposta: "Falta de previsibilidade e alta concorrência — sozinha, não gera uma operação de vendas escalável." },
-  { curso: "Chuva de Vendas", pergunta: "O que é demanda potencial?", resposta: "Leads com o perfil certo, mas fora do momento de compra. Exigem função consultiva para serem levados ao fundo de funil." },
-  { curso: "Chuva de Vendas", pergunta: "Qual erro o 'demonstrador' comete?", resposta: "Foca no produto e na ferramenta. Ninguém quer saber do seu produto — as pessoas querem resolver o próprio problema." },
-  { curso: "Chuva de Vendas", pergunta: "A venda deve ser pautada em quê?", resposta: "No cliente e no problema dele — NÃO na solução." },
-  { curso: "Chuva de Vendas", pergunta: "O que ganha a venda: a melhor oferta ou a mais clara?", resposta: "A oferta mais CLARA. Clareza gera maior taxa de conversão." },
-  { curso: "Chuva de Vendas", pergunta: "Qual a diferença entre problema e dor?", resposta: "Problema é o obstáculo; dor é o que se sente no dia a dia. A dor é o que faz o lead agir." },
-  { curso: "Chuva de Vendas", pergunta: "Por que 'nunca trazer uma dor nova'?", resposta: "As dores devem vir do próprio lead (escuta ativa). Você trabalha em cima do que ele trouxe, não inventa dores." },
-  { curso: "Chuva de Vendas", pergunta: "Para que serve o rapport na reunião?", resposta: "Criar conexão com o lead. Quanto mais conexão, mais ele te ouve e mais vê sentido na sua oferta." },
-  { curso: "Chuva de Vendas", pergunta: "O que é a 'Maneira 2.0'?", resposta: "Fazer o lead explicar o próprio negócio (histórico, objetivos, dores) e anotar tudo para usar depois a favor dele." }
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "O que é um Lead?",
+    opcoes: ["Alguém que preencheu um formulário", "Um cliente que já comprou", "Um lead pronto para fechar"],
+    correta: 0,
+    resposta: "Lead é alguém que preencheu um formulário (os dados de uma pessoa). É binário: ou é lead, ou não é."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Qual a diferença entre MQL e SQL?",
+    opcoes: ["MQL tem o perfil que buscamos; SQL teve o interesse validado", "MQL está pronto para vendas; SQL é só marketing", "São a mesma coisa"],
+    correta: 0,
+    resposta: "MQL é o lead com o perfil que buscamos (qualificado pelo marketing). SQL é quando o interesse foi validado e ele está pronto para vendas."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "O que significa BANT?",
+    opcoes: ["Budget, Autoridade, Necessidade, Timing", "Brand, Audience, Network, Traffic", "Base, Ação, Nicho, Teste"],
+    correta: 0,
+    resposta: "BANT = Budget, Autoridade, Necessidade e Timing — 4 informações validadas na pré-venda antes de marcar a reunião."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Lead qualificado é o mesmo que lead quente?",
+    opcoes: ["Não: qualificado é perfil; quente é o momento (temperatura)", "Sim, são sinônimos", "Sim, todo qualificado vai comprar"],
+    correta: 0,
+    resposta: "Não. Qualificado é sobre PERFIL; quente é sobre TEMPERATURA (momento). Um lead qualificado pode estar frio."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "O que caracteriza um lead frio?",
+    opcoes: ["Não sabe que tem o problema (topo de funil)", "Já conhece a solução e vai comprar", "Já está pronto para a reunião"],
+    correta: 0,
+    resposta: "Lead frio não sabe que tem o problema (topo de funil). Tem o perfil certo, mas é mais difícil levar para uma call e vender."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Como se capta a demanda real?",
+    opcoes: ["Google Ads, comprando a palavra-chave de quem já busca", "LinkedIn Ads por cargo", "Só por indicação"],
+    correta: 0,
+    resposta: "Demanda real é quem já busca a solução (fundo de funil). Captada tipicamente por Google Ads, comprando a palavra-chave."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Qual o maior problema da demanda real?",
+    opcoes: ["Falta de previsibilidade e alta concorrência", "Excesso de volume de leads", "Não funciona no digital"],
+    correta: 0,
+    resposta: "A demanda real sofre com falta de previsibilidade e alta concorrência — sozinha, não gera uma operação de vendas escalável."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "O que é demanda potencial?",
+    opcoes: ["Perfil certo, mas fora do momento de compra", "Quem já está comprando agora", "Quem nunca vai comprar"],
+    correta: 0,
+    resposta: "Demanda potencial são leads com o perfil certo, mas fora do momento de compra. Exigem função consultiva para irem ao fundo de funil."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Qual erro o 'demonstrador' comete?",
+    opcoes: ["Foca no produto em vez do problema do cliente", "Ouve demais o cliente", "Não conhece a ferramenta"],
+    correta: 0,
+    resposta: "O demonstrador foca no produto e na ferramenta. Ninguém quer saber do seu produto — as pessoas querem resolver o próprio problema."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "A venda deve ser pautada em quê?",
+    opcoes: ["No cliente e no problema dele", "Na solução e nos recursos", "No menor preço"],
+    correta: 0,
+    resposta: "A venda deve ser pautada no cliente e no problema dele — NÃO na solução."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "O que ganha a venda?",
+    opcoes: ["A oferta mais clara", "A oferta mais barata", "A empresa maior"],
+    correta: 0,
+    resposta: "Ganha a oferta mais CLARA. Clareza gera maior taxa de conversão — não é a 'melhor' oferta que vence."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Qual a diferença entre problema e dor?",
+    opcoes: ["Problema é o obstáculo; dor é o que se sente no dia a dia", "São a mesma coisa", "Dor é o obstáculo; problema é o sentimento"],
+    correta: 0,
+    resposta: "Problema é o obstáculo; dor é o que se sente no dia a dia. A dor é o que faz o lead agir."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Por que 'nunca trazer uma dor nova'?",
+    opcoes: ["As dores devem vir do próprio lead (escuta ativa)", "Para encurtar a reunião", "Porque o vendedor não conhece o mercado"],
+    correta: 0,
+    resposta: "As dores devem vir do próprio lead (escuta ativa). Você trabalha em cima do que ele trouxe, não inventa dores."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "Para que serve o rapport na reunião?",
+    opcoes: ["Criar conexão: quanto mais conexão, mais ele te ouve", "Fechar o preço logo", "Demonstrar o produto"],
+    correta: 0,
+    resposta: "O rapport cria conexão com o lead. Quanto mais conexão, mais ele te ouve e mais vê sentido na sua oferta."
+  },
+  {
+    curso: "Chuva de Vendas",
+    pergunta: "O que é a 'Maneira 2.0'?",
+    opcoes: ["Fazer o lead explicar o próprio negócio e anotar para usar depois", "Demonstrar o produto em 2 minutos", "Enviar a proposta por e-mail"],
+    correta: 0,
+    resposta: "Maneira 2.0 é fazer o lead explicar o próprio negócio (histórico, objetivos, dores) e anotar tudo para usar depois a favor dele."
+  }
 ];

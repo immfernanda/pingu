@@ -242,6 +242,34 @@ ul.lista li { margin: 4px 0; color: var(--txt); }
 }
 .quiz-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
 
+/* opções de múltipla escolha */
+.quiz-opcoes { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.opcao {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  width: 100%; text-align: left; cursor: pointer;
+  padding: 13px 16px; border-radius: 12px; font-size: 15px; font-weight: 600;
+  color: var(--txt); background: var(--glass-light);
+  border: 1px solid var(--glass-border);
+  transition: transform .12s, border-color .15s, background .15s;
+}
+.opcao:hover:not(:disabled) { border-color: var(--accent-2); transform: translateX(3px); }
+.opcao:disabled { cursor: default; }
+.opcao .marca { font-weight: 800; font-size: 16px; }
+.opcao.certa {
+  background: rgba(46, 164, 79, 0.22); border-color: #2ea44f; color: #eafff0;
+}
+.opcao.errada {
+  background: rgba(219, 68, 68, 0.20); border-color: #e0524f; color: #ffecec;
+}
+.quiz-feedback { margin-top: 16px; font-weight: 700; font-size: 15px; }
+.quiz-feedback.ok { color: var(--ok); }
+.quiz-feedback.revisar { color: var(--warn); }
+
+@media (prefers-reduced-motion: reduce) {
+  .opcao, .tab, .sub-tab, .btn-primario, .btn-secundario, .btn-tema { transition: none; }
+  .opcao:hover:not(:disabled) { transform: none; }
+}
+
 /* ---------- sub-tabs (seletor de rede) ---------- */
 .sub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .sub-tab {
