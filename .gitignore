@@ -5,8 +5,8 @@ Desktop.ini
 .vscode/
 .idea/
 
-# Configuração local do Claude Code
-.claude/settings.local.json
+# Claude Code (config e skills locais — não fazem parte do site)
+.claude/
 
 # Temporários
 *.tmp
