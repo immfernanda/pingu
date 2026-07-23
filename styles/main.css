@@ -265,6 +265,23 @@ ul.lista li { margin: 4px 0; color: var(--txt); }
 .quiz-feedback.ok { color: var(--ok); }
 .quiz-feedback.revisar { color: var(--warn); }
 
+/* ---------- checklist (clientes) ---------- */
+.checklist { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 10px; }
+.check-progresso { color: var(--txt-soft); font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.check-item {
+  display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+  padding: 12px 14px; border-radius: 12px; color: var(--txt); font-size: 14.5px;
+  background: var(--glass); border: 1px solid var(--glass-border);
+  transition: border-color .15s, background .15s, opacity .15s;
+}
+.check-item:hover { border-color: var(--accent-2); }
+.check-item input {
+  width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; cursor: pointer;
+  accent-color: var(--accent);
+}
+.check-item.feito { opacity: .55; }
+.check-item.feito span { text-decoration: line-through; }
+
 @media (prefers-reduced-motion: reduce) {
   .opcao, .tab, .sub-tab, .btn-primario, .btn-secundario, .btn-tema { transition: none; }
   .opcao:hover:not(:disabled) { transform: none; }

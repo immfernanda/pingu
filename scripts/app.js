@@ -11,6 +11,7 @@ const $contador = document.getElementById("contador");
 
 // Abas: uma por curso + as fixas
 const ABAS = [
+  { id: "clientes", rotulo: "Clientes", tipo: "clientes" },
   ...CURSOS.map((c) => ({ id: c.id, rotulo: c.titulo, tipo: "curso" })),
   { id: "cards", rotulo: "Cards de Estudo", tipo: "cards" },
   { id: "glossario", rotulo: "Glossário", tipo: "glossario" },
@@ -20,6 +21,7 @@ const ABAS = [
 
 let abaAtiva = ABAS[0].id;
 let redeAtiva = REDES[0].id;
+let clienteAtivo = (typeof CLIENTES !== "undefined" && CLIENTES.length) ? CLIENTES[0].id : null;
 
 // estado do quiz (persiste entre redesenhos)
 let quiz = { ordem: [], i: 0, acertos: 0, errados: [], ativo: false,
@@ -166,6 +168,132 @@ function renderConexoes() {
     grid.appendChild(card);
   });
   $conteudo.appendChild(grid);
+}
+
+/* ---------- CLIENTES (central de operação) ---------- */
+function renderClientes() {
+  $conteudo.appendChild(headerSimples("Clientes",
+    "Tudo para operar e otimizar as campanhas de cada cliente — no dia a dia e antes das reuniões."));
+
+  if (!CLIENTES.length) {
+    $conteudo.appendChild(el("div", "vazio", "Nenhum cliente ainda. Me mande os dados de um cliente que eu adiciono aqui."));
+    return;
+  }
+
+  // seletor de cliente
+  const seletor = el("div", "sub-tabs");
+  CLIENTES.forEach((c) => {
+    const b = el("div", "sub-tab" + (c.id === clienteAtivo ? " ativa" : ""), esc(c.nome));
+    b.onclick = () => { clienteAtivo = c.id; renderView(); };
+    seletor.appendChild(b);
+  });
+  $conteudo.appendChild(seletor);
+
+  const cli = CLIENTES.find((c) => c.id === clienteAtivo) || CLIENTES[0];
+
+  if (cli.exemplo) {
+    $conteudo.appendChild(el("div", "aviso",
+      "🧩 Este é um cliente de exemplo (modelo). Me mande os dados de um cliente real que eu crio a aba dele — e depois é só apagar este."));
+  }
+
+  // visão geral
+  const geral = el("div", "card");
+  geral.appendChild(el("h3", null, esc(cli.nome)));
+  const chips = el("div", "chips");
+  (cli.redes || []).forEach((r) => chips.appendChild(el("span", "chip", esc(r))));
+  geral.appendChild(chips);
+  if (cli.objetivo) { geral.appendChild(el("div", "rotulo", "Objetivo")); geral.appendChild(el("p", null, esc(cli.objetivo))); }
+  if (cli.orcamento) { geral.appendChild(el("div", "rotulo", "Orçamento")); geral.appendChild(el("p", null, esc(cli.orcamento))); }
+  if (cli.observacoes) { geral.appendChild(el("div", "rotulo", "Observações")); geral.appendChild(el("p", null, esc(cli.observacoes))); }
+  $conteudo.appendChild(geral);
+
+  // rotina diária (zera a cada dia)
+  if (cli.rotinaDiaria && cli.rotinaDiaria.length) {
+    $conteudo.appendChild(el("div", "lista-titulo", "Rotina diária"));
+    $conteudo.appendChild(checklist(cli.id, "diaria", cli.rotinaDiaria, true));
+  }
+
+  // antes das reuniões (limpa manualmente)
+  if (cli.antesReuniao && cli.antesReuniao.length) {
+    $conteudo.appendChild(el("div", "lista-titulo", "Antes das reuniões"));
+    $conteudo.appendChild(checklist(cli.id, "reuniao", cli.antesReuniao, false));
+  }
+
+  // o que editar e como
+  if (cli.editar && cli.editar.length) {
+    $conteudo.appendChild(el("div", "lista-titulo", "O que editar e como"));
+    const grid = el("div", "grid");
+    cli.editar.forEach((e) => {
+      const card = el("div", "card");
+      card.appendChild(el("div", "fonte", "Situação"));
+      card.appendChild(el("h3", null, esc(e.situacao)));
+      card.appendChild(el("div", "rotulo", "O que editar"));
+      card.appendChild(el("p", null, esc(e.oQue)));
+      card.appendChild(el("div", "rotulo", "Como editar"));
+      card.appendChild(el("p", null, esc(e.como)));
+      grid.appendChild(card);
+    });
+    $conteudo.appendChild(grid);
+  }
+}
+
+/* checklist com persistência (localStorage). resetDaily zera a cada novo dia. */
+function hojeISO() { return new Date().toISOString().slice(0, 10); }
+function carregarCheck(chave, n, resetDaily) {
+  let obj = null;
+  try { obj = JSON.parse(localStorage.getItem(chave) || "null"); } catch (e) {}
+  if (!obj || !Array.isArray(obj.marcados) || obj.marcados.length !== n ||
+      (resetDaily && obj.data !== hojeISO())) {
+    obj = { data: hojeISO(), marcados: new Array(n).fill(false) };
+    salvarCheck(chave, obj);
+  }
+  return obj;
+}
+function salvarCheck(chave, obj) {
+  if (!obj.data) obj.data = hojeISO();
+  try { localStorage.setItem(chave, JSON.stringify(obj)); } catch (e) {}
+}
+function checklist(clienteId, tipo, itens, resetDaily) {
+  const chave = "pingu-check-" + clienteId + "-" + tipo;
+  const estado = carregarCheck(chave, itens.length, resetDaily);
+  const wrap = el("div", "checklist");
+
+  const prog = el("div", "check-progresso");
+  const atualizarProg = () => {
+    const n = estado.marcados.filter(Boolean).length;
+    prog.textContent = n + " / " + itens.length + " feito(s)" + (resetDaily ? " hoje" : "");
+  };
+  wrap.appendChild(prog);
+
+  itens.forEach((txt, idx) => {
+    const label = el("label", "check-item" + (estado.marcados[idx] ? " feito" : ""));
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = !!estado.marcados[idx];
+    cb.onchange = () => {
+      estado.marcados[idx] = cb.checked;
+      salvarCheck(chave, estado);
+      label.classList.toggle("feito", cb.checked);
+      atualizarProg();
+    };
+    label.appendChild(cb);
+    label.appendChild(el("span", null, esc(txt)));
+    wrap.appendChild(label);
+  });
+  atualizarProg();
+
+  const acoes = el("div", "quiz-acoes");
+  const limpar = el("button", "btn-secundario", resetDaily ? "Zerar hoje" : "Limpar checklist");
+  limpar.onclick = () => {
+    estado.marcados = itens.map(() => false);
+    estado.data = hojeISO();
+    salvarCheck(chave, estado);
+    renderView();
+  };
+  acoes.appendChild(limpar);
+  wrap.appendChild(acoes);
+
+  return wrap;
 }
 
 /* ---------- CARDS DE ESTUDO (quiz de múltipla escolha) ---------- */
@@ -390,14 +518,15 @@ function renderView() {
     renderBusca(termoBusca);
   } else {
     const aba = ABAS.find((a) => a.id === abaAtiva);
-    if (aba.tipo === "curso") renderCurso(CURSOS.find((c) => c.id === aba.id));
+    if (aba.tipo === "clientes") renderClientes();
+    else if (aba.tipo === "curso") renderCurso(CURSOS.find((c) => c.id === aba.id));
     else if (aba.tipo === "cards") renderCards();
     else if (aba.tipo === "glossario") renderGlossario();
     else if (aba.tipo === "conexoes") renderConexoes();
     else if (aba.tipo === "analise") renderAnalise();
   }
-  $contador.textContent = CURSOS.length + " curso(s) · " + CONCEITOS.length +
-    " conceitos · " + CARDS_ESTUDO.length + " cards";
+  $contador.textContent = CLIENTES.length + " cliente(s) · " + CURSOS.length +
+    " curso(s) · " + CARDS_ESTUDO.length + " cards";
 }
 function render() {
   renderTabs();

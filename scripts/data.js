@@ -430,3 +430,72 @@ const CARDS_ESTUDO = [
     resposta: "Maneira 2.0 é fazer o lead explicar o próprio negócio (histórico, objetivos, dores) e anotar tudo para usar depois a favor dele."
   }
 ];
+
+/* -------------------------------------------------------------------------
+   7) CLIENTES — central de operação. Uma aba por cliente.
+   Cada cliente tem: visão geral, rotina diária (checklist que zera por dia),
+   preparação antes das reuniões (checklist) e o guia "o que editar e como".
+   Para adicionar um cliente: copie o objeto abaixo, troque o id e preencha.
+   O "Cliente Modelo" é só um exemplo — pode apagar quando tiver os reais.
+   Campos de 'editar': { situacao, oQue, como }.
+   ------------------------------------------------------------------------- */
+const CLIENTES = [
+  {
+    id: "modelo",
+    nome: "Cliente Modelo (exemplo)",
+    exemplo: true,
+    redes: ["Google", "Meta"],
+    objetivo: "Ex.: gerar leads qualificados a um CPA abaixo de R$ 80.",
+    orcamento: "Ex.: R$ 3.000/mês (R$ 100/dia).",
+    observacoes: "Substitua por: produto/serviço, público-alvo, oferta principal, o que já foi testado e o que funciona.",
+    rotinaDiaria: [
+      "Conferir se as campanhas estão ativas e sem reprovação de anúncio",
+      "Checar o gasto do dia vs. o orçamento planejado",
+      "Olhar CPA / custo por lead e comparar com a meta",
+      "Verificar campanhas com queda ou disparada de CPM/CPC",
+      "Revisar anúncios com CTR muito baixo ou sinal de fadiga",
+      "Confirmar que as conversões estão sendo registradas (pixel/tag)",
+      "Anotar 1 aprendizado ou hipótese do dia"
+    ],
+    antesReuniao: [
+      "Levantar os números do período (investimento, leads, CPA, ROAS)",
+      "Comparar com o período anterior e com a meta combinada",
+      "Separar 1 vitória, 1 problema e 1 próximo passo",
+      "Preparar prints/gráficos de apoio visual",
+      "Revisar o que foi prometido na última reunião",
+      "Listar dúvidas e decisões que preciso do cliente"
+    ],
+    editar: [
+      {
+        situacao: "CPA / custo por lead acima da meta por 3+ dias",
+        oQue: "Orçamento e segmentação",
+        como: "Pausar conjuntos e anúncios com pior CPA, realocar a verba para os melhores e apertar o público se estiver amplo demais."
+      },
+      {
+        situacao: "CTR caindo com o tempo (fadiga de criativo) — comum no Meta",
+        oQue: "Criativos",
+        como: "Subir 2–3 criativos novos e pausar os fatigados. Variar gancho, formato e ângulo antes de mexer em público."
+      },
+      {
+        situacao: "CPC/CPM subindo no leilão",
+        oQue: "Lance e segmentação",
+        como: "Revisar concorrência e tamanho do público. Testar público mais amplo e reavaliar a estratégia de lance."
+      },
+      {
+        situacao: "Muitos cliques, poucas conversões",
+        oQue: "Landing page e oferta",
+        como: "Alinhar a mensagem do anúncio com a da página, reduzir atrito no formulário e testar uma oferta mais clara."
+      },
+      {
+        situacao: "Chegam leads, mas de baixa qualidade",
+        oQue: "Evento de otimização",
+        como: "Otimizar por um evento de qualidade (não por clique/CPL) e enviar as conversões de qualificação (MQL) de volta à plataforma."
+      },
+      {
+        situacao: "Campanha recém-lançada (fase de aprendizado)",
+        oQue: "Paciência e estrutura",
+        como: "Não mexer todo dia. Deixar sair da fase de aprendizado antes de otimizar, para não zerar o aprendizado do algoritmo."
+      }
+    ]
+  }
+];
