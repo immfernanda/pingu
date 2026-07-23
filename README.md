@@ -4,9 +4,14 @@ Projeto pessoal do gestor de tráfego. Começa como um **lugar para organizar e
 associar tudo que estou estudando** e evolui para um **analisador de gestão de
 tráfego pago** com visão estratégica (Google, Meta e LinkedIn Ads).
 
+## 🌐 Site no ar
+
+**https://immfernanda.github.io/gestordetrafego/**
+
 ## Como abrir
 
-Dê **duplo clique em `index.html`** (abre direto no navegador, sem instalar nada).
+- **Online:** o link acima (abre em qualquer navegador ou celular).
+- **Local:** duplo clique em `index.html` (abre direto, sem instalar nada).
 
 ## O que já tem
 
