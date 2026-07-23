@@ -1,4 +1,4 @@
-# RAIZHE — Base de Conhecimento & Gestão de Tráfego
+# Pingu — Base de Conhecimento & Gestão de Tráfego
 
 Projeto pessoal do gestor de tráfego. Começa como um **lugar para organizar e
 associar tudo que estou estudando** e evolui para um **analisador de gestão de
@@ -6,7 +6,7 @@ tráfego pago** com visão estratégica (Google, Meta e LinkedIn Ads).
 
 ## 🌐 Site no ar
 
-**https://immfernanda.github.io/gestordetrafego/**
+**https://immfernanda.github.io/pingu/**
 
 ## Como abrir
 
@@ -47,7 +47,7 @@ Tipos de bloco: `conceito`, `lista`, `fluxo`, `destaque`, `nota`.
 
 ```
 index.html          página única (abre no navegador)
-styles/main.css     tema escuro RAIZHE
+styles/main.css     tema Pingu (glassmorphism)
 scripts/data.js     TODO o conteúdo (edite aqui)
 scripts/app.js      lógica da interface (abas, busca, links)
 ```

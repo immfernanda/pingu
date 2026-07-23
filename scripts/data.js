@@ -1,5 +1,5 @@
 /* =========================================================================
-   RAIZHE — Base de Conhecimento & Gestão de Tráfego
+   Pingu — Base de Conhecimento & Gestão de Tráfego
    -------------------------------------------------------------------------
    Este arquivo guarda TODO o conteúdo do sistema em forma de dados.
    Para adicionar um curso novo: copie um objeto dentro de CURSOS e preencha.
