@@ -7,6 +7,34 @@
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
+  <!-- Fundo de paisagem (colinas verdes ao pôr do sol) — SVG embutido, offline -->
+  <div class="cenario" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8fb4c9"/>
+          <stop offset="45%" stop-color="#cdd3bf"/>
+          <stop offset="72%" stop-color="#efd9a9"/>
+          <stop offset="100%" stop-color="#f3e2b8"/>
+        </linearGradient>
+        <radialGradient id="sol" cx="50%" cy="88%" r="55%">
+          <stop offset="0%" stop-color="#fff4d6" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#fff4d6" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1440" height="900" fill="url(#ceu)"/>
+      <rect width="1440" height="900" fill="url(#sol)"/>
+      <!-- montanhas distantes -->
+      <path d="M0 470 Q 240 400 480 450 T 960 440 T 1440 460 V900 H0 Z" fill="#9fb08a" opacity="0.55"/>
+      <!-- colina 3 -->
+      <path d="M0 560 Q 300 480 620 540 T 1160 520 T 1440 560 V900 H0 Z" fill="#7fa25c"/>
+      <!-- colina 2 -->
+      <path d="M0 660 Q 360 560 760 640 T 1440 620 V900 H0 Z" fill="#5f8a3f"/>
+      <!-- colina 1 (frente) -->
+      <path d="M0 760 Q 420 660 900 740 T 1440 720 V900 H0 Z" fill="#3f6b28"/>
+    </svg>
+  </div>
+
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark">RAIZHE</span>
