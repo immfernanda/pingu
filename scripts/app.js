@@ -375,3 +375,18 @@ function render() {
 
 $busca.addEventListener("input", render);
 render();
+
+/* ---------- tema claro / escuro ---------- */
+const $tema = document.getElementById("tema-toggle");
+function aplicarTema(t) {
+  document.documentElement.setAttribute("data-tema", t);
+  $tema.textContent = t === "escuro" ? "☀️ Claro" : "🌙 Escuro";
+  try { localStorage.setItem("raizhe-tema", t); } catch (e) {}
+}
+let temaAtual = "escuro"; // padrão: fundo todo preto
+try { temaAtual = localStorage.getItem("raizhe-tema") || "escuro"; } catch (e) {}
+$tema.onclick = () => {
+  temaAtual = temaAtual === "escuro" ? "claro" : "escuro";
+  aplicarTema(temaAtual);
+};
+aplicarTema(temaAtual);

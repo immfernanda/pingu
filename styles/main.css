@@ -25,6 +25,17 @@
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.28);
 }
 
+/* ---------- MODO ESCURO (fundo todo preto) ---------- */
+:root[data-tema="escuro"] {
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-strong: rgba(255, 255, 255, 0.06);
+  --glass-light: rgba(255, 255, 255, 0.09);
+  --glass-border: rgba(255, 255, 255, 0.16);
+}
+:root[data-tema="escuro"] body { background: #000; }
+:root[data-tema="escuro"] .cenario { display: none; }
+:root[data-tema="escuro"] body::after { display: none; }
+
 * { box-sizing: border-box; }
 
 html, body { height: 100%; }
@@ -82,6 +93,15 @@ body::after {
 }
 .search input::placeholder { color: var(--txt-soft); }
 .search input:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.btn-tema {
+  flex-shrink: 0; cursor: pointer; white-space: nowrap;
+  padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  color: var(--txt); background: var(--glass-light);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(6px); transition: all .15s;
+}
+.btn-tema:hover { border-color: var(--accent-2); transform: translateY(-1px); }
 
 /* ---------- Tabs ---------- */
 .tabs {
