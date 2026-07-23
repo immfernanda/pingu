@@ -198,6 +198,40 @@ ul.lista li { margin: 4px 0; color: var(--txt); }
   backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
 }
 
+/* ---------- botões ---------- */
+.btn-primario, .btn-secundario, .btn-acerto, .btn-erro {
+  border: none; cursor: pointer; font-weight: 700; font-size: 14px;
+  padding: 12px 20px; border-radius: 12px; margin-top: 14px;
+  transition: transform .12s, box-shadow .15s, filter .15s;
+}
+.btn-primario:hover, .btn-acerto:hover, .btn-erro:hover, .btn-secundario:hover { transform: translateY(-1px); }
+.btn-primario { background: var(--accent-grad); color: #0e2b12; box-shadow: 0 6px 18px rgba(31,157,77,0.4); }
+.btn-secundario { background: var(--glass-light); color: var(--txt); border: 1px solid var(--glass-border); }
+.btn-acerto { background: linear-gradient(95deg, #7ee081, #2ea44f); color: #08240f; }
+.btn-erro { background: var(--glass-light); color: var(--txt); border: 1px solid var(--glass-border); }
+
+/* ---------- quiz ---------- */
+.quiz-topo { display: flex; justify-content: space-between; align-items: center; margin: 4px 2px 12px; color: var(--txt-soft); font-size: 13px; }
+.quiz-placar { font-weight: 700; color: var(--txt); }
+.quiz-card { text-align: left; }
+.quiz-pergunta { font-size: 19px; font-weight: 700; color: #fff; margin: 6px 0 4px; line-height: 1.4; }
+.quiz-resposta {
+  margin-top: 14px; padding: 14px 16px; border-radius: 12px;
+  background: var(--glass-light); border-left: 3px solid var(--accent-2);
+  color: var(--txt); font-size: 15px;
+}
+.quiz-acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- sub-tabs (seletor de rede) ---------- */
+.sub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.sub-tab {
+  padding: 8px 15px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600;
+  background: var(--glass); border: 1px solid var(--glass-border); color: var(--txt);
+  backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); transition: all .15s;
+}
+.sub-tab:hover { border-color: var(--accent-2); }
+.sub-tab.ativa { background: var(--accent-grad); color: #0e2b12; border-color: transparent; }
+
 mark { background: var(--accent-2); color: #0e2b12; border-radius: 3px; padding: 0 2px; }
 
 @media (max-width: 640px) {

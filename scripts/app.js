@@ -1,7 +1,7 @@
 /* =========================================================================
    RAIZHE — lógica da interface
-   Monta abas, renderiza cursos/glossário/conexões/analisador, busca e links.
-   Não precisa mexer aqui para adicionar conteúdo — edite scripts/data.js.
+   Abas, cursos, glossário, conexões, cards de estudo e análise por rede.
+   Para adicionar conteúdo, edite scripts/data.js — não precisa mexer aqui.
    ========================================================================= */
 
 const $tabs = document.getElementById("tabs");
@@ -9,15 +9,20 @@ const $conteudo = document.getElementById("conteudo");
 const $busca = document.getElementById("busca");
 const $contador = document.getElementById("contador");
 
-// Abas fixas + uma aba por curso
+// Abas: uma por curso + as fixas
 const ABAS = [
   ...CURSOS.map((c) => ({ id: c.id, rotulo: c.titulo, tipo: "curso" })),
+  { id: "cards", rotulo: "Cards de Estudo", tipo: "cards" },
   { id: "glossario", rotulo: "Glossário", tipo: "glossario" },
   { id: "conexoes", rotulo: "Conexões c/ Tráfego", tipo: "conexoes" },
-  { id: "analisador", rotulo: "Analisador (protótipo)", tipo: "analisador" }
+  { id: "analise", rotulo: "Análise por Rede", tipo: "analise" }
 ];
 
 let abaAtiva = ABAS[0].id;
+let redeAtiva = REDES[0].id;
+
+// estado do quiz (persiste entre redesenhos)
+let quiz = { ordem: [], i: 0, revelado: false, acertos: 0, errados: [], ativo: false };
 
 /* ---------- utilidades ---------- */
 function el(tag, className, html) {
@@ -30,6 +35,24 @@ function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
+function slug(s) {
+  return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+function headerSimples(titulo, sub) {
+  const cab = el("div", "pagina-cabecalho");
+  cab.appendChild(el("h1", null, esc(titulo)));
+  if (sub) cab.appendChild(el("div", "sub", esc(sub)));
+  return cab;
+}
+function embaralhar(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 /* ---------- abas ---------- */
 function renderTabs() {
@@ -41,7 +64,7 @@ function renderTabs() {
   });
 }
 
-/* ---------- render de um curso ---------- */
+/* ---------- curso ---------- */
 function renderCurso(curso) {
   const cab = el("div", "pagina-cabecalho");
   cab.appendChild(el("h1", null, esc(curso.titulo)));
@@ -59,7 +82,6 @@ function renderCurso(curso) {
     $conteudo.appendChild(m);
   });
 }
-
 function renderBloco(b) {
   switch (b.tipo) {
     case "conceito": {
@@ -124,13 +146,9 @@ function irParaConceito(termo) {
   const alvo = document.getElementById("conceito-" + slug(termo));
   if (alvo) {
     alvo.scrollIntoView({ behavior: "smooth", block: "center" });
-    alvo.style.outline = "2px solid var(--accent)";
+    alvo.style.outline = "2px solid var(--accent-2)";
     setTimeout(() => (alvo.style.outline = "none"), 1200);
   }
-}
-function slug(s) {
-  return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 /* ---------- conexões com tráfego ---------- */
@@ -149,13 +167,135 @@ function renderConexoes() {
   $conteudo.appendChild(grid);
 }
 
-/* ---------- analisador (protótipo) ---------- */
-function renderAnalisador() {
-  $conteudo.appendChild(headerSimples("Analisador de Campanhas — protótipo",
-    "O 'jogo': escolha uma métrica e veja as causas prováveis de ela subir ou cair."));
-  $conteudo.appendChild(el("div", "aviso",
-    "🌱 Semente do diagnóstico. Vamos expandir com casos reais e regras por plataforma (Google · Meta · LinkedIn)."));
+/* ---------- CARDS DE ESTUDO (quiz) ---------- */
+function renderCards() {
+  $conteudo.appendChild(headerSimples("Cards de Estudo",
+    "Tente responder de cabeça, depois revele. Acertou: ótimo. Errou: ótimo também — vai pra revisão."));
+  const area = el("div");
+  area.id = "quiz-area";
+  $conteudo.appendChild(area);
+  desenharQuiz(area);
+}
+
+function iniciarQuiz(fonte) {
+  quiz = { ordem: embaralhar(fonte), i: 0, revelado: false, acertos: 0, errados: [], ativo: true };
+}
+
+function desenharQuiz(area) {
+  area.innerHTML = "";
+
+  // tela inicial
+  if (!quiz.ativo && quiz.i === 0) {
+    const card = el("div", "card");
+    card.appendChild(el("p", null,
+      "São <b>" + CARDS_ESTUDO.length + " cards</b>. A ordem é sorteada a cada rodada."));
+    const btn = el("button", "btn-primario", "Começar ▶");
+    btn.onclick = () => { iniciarQuiz(CARDS_ESTUDO); desenharQuiz(area); };
+    card.appendChild(btn);
+    area.appendChild(card);
+    return;
+  }
+
+  // tela final
+  if (quiz.ativo && quiz.i >= quiz.ordem.length) {
+    const total = quiz.ordem.length;
+    const card = el("div", "card");
+    card.appendChild(el("h3", null, "Rodada concluída! 🎯"));
+    card.appendChild(el("p", null,
+      "Você viu <b>" + total + "</b> cards · acertou <b>" + quiz.acertos + "</b> · marcou <b>" +
+      quiz.errados.length + "</b> para revisar."));
+    card.appendChild(el("p", null,
+      "Errar aqui é ótimo — é exatamente assim que fixa. O que você revisar hoje vira acerto na próxima. 💪"));
+    const acoes = el("div", "quiz-acoes");
+    const btnTudo = el("button", "btn-primario", "Refazer tudo");
+    btnTudo.onclick = () => { iniciarQuiz(CARDS_ESTUDO); desenharQuiz(area); };
+    acoes.appendChild(btnTudo);
+    if (quiz.errados.length) {
+      const btnRev = el("button", "btn-secundario", "Revisar os que errei (" + quiz.errados.length + ")");
+      const errados = quiz.errados.slice();
+      btnRev.onclick = () => { iniciarQuiz(errados); desenharQuiz(area); };
+      acoes.appendChild(btnRev);
+    }
+    card.appendChild(acoes);
+    area.appendChild(card);
+    return;
+  }
+
+  // card atual
+  const atual = quiz.ordem[quiz.i];
+  const total = quiz.ordem.length;
+
+  const barra = el("div", "quiz-topo");
+  barra.appendChild(el("span", "quiz-progresso", "Card " + (quiz.i + 1) + " de " + total));
+  barra.appendChild(el("span", "quiz-placar", "✓ " + quiz.acertos + "  ·  📌 " + quiz.errados.length));
+  area.appendChild(barra);
+
+  const card = el("div", "card quiz-card");
+  card.appendChild(el("div", "fonte", esc(atual.curso)));
+  card.appendChild(el("div", "quiz-pergunta", esc(atual.pergunta)));
+
+  if (!quiz.revelado) {
+    const btn = el("button", "btn-primario", "Mostrar resposta");
+    btn.onclick = () => { quiz.revelado = true; desenharQuiz(area); };
+    card.appendChild(btn);
+  } else {
+    card.appendChild(el("div", "quiz-resposta", esc(atual.resposta)));
+    const acoes = el("div", "quiz-acoes");
+    const ok = el("button", "btn-acerto", "Acertei ✓");
+    ok.onclick = () => { quiz.acertos++; avancar(area); };
+    const err = el("button", "btn-erro", "Errei — revisar 📌");
+    err.onclick = () => { quiz.errados.push(atual); avancar(area); };
+    acoes.appendChild(ok);
+    acoes.appendChild(err);
+    card.appendChild(acoes);
+  }
+  area.appendChild(card);
+}
+function avancar(area) {
+  quiz.i++;
+  quiz.revelado = false;
+  desenharQuiz(area);
+}
+
+/* ---------- ANÁLISE POR REDE ---------- */
+function renderAnalise() {
+  $conteudo.appendChild(headerSimples("Análise por Rede",
+    "Cada rede tem seu comportamento. O mesmo número muda de sentido conforme a plataforma."));
+
+  // seletor de rede
+  const seletor = el("div", "sub-tabs");
+  REDES.forEach((r) => {
+    const b = el("div", "sub-tab" + (r.id === redeAtiva ? " ativa" : ""), esc(r.nome));
+    b.onclick = () => { redeAtiva = r.id; renderView(); };
+    seletor.appendChild(b);
+  });
+  $conteudo.appendChild(seletor);
+
+  const rede = REDES.find((r) => r.id === redeAtiva);
+
+  const perfil = el("div", "card");
+  perfil.appendChild(el("div", "fonte", esc(rede.funil)));
+  perfil.appendChild(el("h3", null, esc(rede.nome)));
+  perfil.appendChild(el("p", null, esc(rede.perfil)));
+  perfil.appendChild(el("div", "rotulo", "Características da rede"));
+  const ul = el("ul", "lista");
+  rede.caracteristicas.forEach((c) => ul.appendChild(el("li", null, esc(c))));
+  perfil.appendChild(ul);
+  $conteudo.appendChild(perfil);
+
+  $conteudo.appendChild(el("div", "lista-titulo", "Como ler os sinais nesta rede"));
   const grid = el("div", "grid");
+  rede.sinais.forEach((s) => {
+    const c = el("div", "card");
+    c.appendChild(el("h3", null, esc(s.metrica)));
+    c.appendChild(el("p", null, esc(s.leitura)));
+    grid.appendChild(c);
+  });
+  $conteudo.appendChild(grid);
+
+  // biblioteca geral de métricas (o "jogo": subiu / caiu)
+  $conteudo.appendChild(el("div", "lista-titulo", "Biblioteca de métricas — subiu / caiu (geral)"));
+  const gridD = el("div", "grid");
   DIAGNOSTICOS.forEach((d) => {
     const card = el("div", "card");
     card.appendChild(el("h3", null, esc(d.metrica)));
@@ -163,9 +303,9 @@ function renderAnalisador() {
     cols.appendChild(colDiag("subiu", "▲ Se subiu, é porque…", d.subiu));
     cols.appendChild(colDiag("caiu", "▼ Se caiu, é porque…", d.caiu));
     card.appendChild(cols);
-    grid.appendChild(card);
+    gridD.appendChild(card);
   });
-  $conteudo.appendChild(grid);
+  $conteudo.appendChild(gridD);
 }
 function colDiag(cls, titulo, itens) {
   const col = el("div", "diag-col " + cls);
@@ -174,13 +314,6 @@ function colDiag(cls, titulo, itens) {
   itens.forEach((i) => ul.appendChild(el("li", null, esc(i))));
   col.appendChild(ul);
   return col;
-}
-
-function headerSimples(titulo, sub) {
-  const cab = el("div", "pagina-cabecalho");
-  cab.appendChild(el("h1", null, esc(titulo)));
-  if (sub) cab.appendChild(el("div", "sub", esc(sub)));
-  return cab;
 }
 
 /* ---------- busca global ---------- */
@@ -198,8 +331,7 @@ function renderBusca(termo) {
       });
     });
   });
-  $conteudo.appendChild(headerSimples('Busca: "' + esc(termo) + '"',
-    achados.length + " resultado(s)"));
+  $conteudo.appendChild(headerSimples('Busca: "' + esc(termo) + '"', achados.length + " resultado(s)"));
   if (!achados.length) {
     $conteudo.appendChild(el("div", "vazio", "Nada encontrado. Tente outra palavra."));
     return;
@@ -218,9 +350,8 @@ function realce(texto, termo) {
   return texto.replace(re, "<mark>$1</mark>");
 }
 
-/* ---------- render principal ---------- */
-function render() {
-  renderTabs();
+/* ---------- render ---------- */
+function renderView() {
   $conteudo.innerHTML = "";
   const termoBusca = $busca.value.trim();
   if (termoBusca.length >= 2) {
@@ -228,11 +359,17 @@ function render() {
   } else {
     const aba = ABAS.find((a) => a.id === abaAtiva);
     if (aba.tipo === "curso") renderCurso(CURSOS.find((c) => c.id === aba.id));
+    else if (aba.tipo === "cards") renderCards();
     else if (aba.tipo === "glossario") renderGlossario();
     else if (aba.tipo === "conexoes") renderConexoes();
-    else if (aba.tipo === "analisador") renderAnalisador();
+    else if (aba.tipo === "analise") renderAnalise();
   }
-  $contador.textContent = CURSOS.length + " curso(s) · " + CONCEITOS.length + " conceitos";
+  $contador.textContent = CURSOS.length + " curso(s) · " + CONCEITOS.length +
+    " conceitos · " + CARDS_ESTUDO.length + " cards";
+}
+function render() {
+  renderTabs();
+  renderView();
   window.scrollTo({ top: 0 });
 }
 

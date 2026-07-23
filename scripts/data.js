@@ -249,3 +249,92 @@ const DIAGNOSTICOS = [
     ]
   }
 ];
+
+/* -------------------------------------------------------------------------
+   5) ANÁLISE POR REDE — Google, Meta e LinkedIn.
+   Cada rede tem um comportamento próprio. O mesmo número "bom" ou "ruim"
+   muda de sentido dependendo da plataforma (ex.: CPM alto no LinkedIn é
+   normal, porque a conversão/qualidade tende a compensar).
+   Campos:
+     - funil: em que parte do funil a rede atua
+     - perfil: resumo do papel da rede
+     - caracteristicas: verdades da plataforma
+     - sinais: leitura de métricas NO CONTEXTO daquela rede
+   ------------------------------------------------------------------------- */
+const REDES = [
+  {
+    id: "google",
+    nome: "Google Ads",
+    funil: "Demanda real · fundo de funil",
+    perfil: "Captura quem JÁ busca a solução (intenção de busca). Search e Pmax. É onde você converte a demanda que já existe.",
+    caracteristicas: [
+      "Intenção alta: a pessoa já procura o que você vende",
+      "CPC pode ser caro em palavras muito concorridas",
+      "Conversão costuma ser boa por ser fundo de funil",
+      "Volume limitado pelo tamanho da busca — pouca previsibilidade de quantos vão buscar no mês"
+    ],
+    sinais: [
+      { metrica: "CPC alto", leitura: "Normal em palavras disputadas. Avalie pelo CPA e pela qualidade do lead, não só pelo clique." },
+      { metrica: "Muitos cliques, poucas conversões", leitura: "Descasamento entre palavra-chave/anúncio e a landing page, ou termos amplos demais atraindo intenção errada." },
+      { metrica: "Impressões baixas", leitura: "Volume de busca pequeno, ou lance/orçamento baixo. A demanda real tem teto." }
+    ]
+  },
+  {
+    id: "meta",
+    nome: "Meta Ads (Facebook/Instagram)",
+    funil: "Demanda potencial · topo e meio de funil",
+    perfil: "Interrompe o público certo por interesse e comportamento. Ótimo para gerar demanda e volume a custo mais baixo.",
+    caracteristicas: [
+      "CPM e CPC geralmente mais baratos que LinkedIn",
+      "Público ainda sem intenção — precisa ser educado até o fundo",
+      "Conversão direta menor; brilha em volume e em remarketing",
+      "O criativo é a principal alavanca (a fadiga chega rápido)"
+    ],
+    sinais: [
+      { metrica: "CTR caindo com o tempo", leitura: "Fadiga de criativo — o público já viu demais. Renove o criativo antes de mexer no resto." },
+      { metrica: "CPM baixo, mas lead ruim", leitura: "Público amplo demais. Aperte a segmentação ou otimize por um evento de qualidade (não só clique)." },
+      { metrica: "Muito clique, pouca conversão", leitura: "Tráfego ainda frio (topo de funil). Trabalhe remarketing e nutrição, não espere venda direta." }
+    ]
+  },
+  {
+    id: "linkedin",
+    nome: "LinkedIn Ads",
+    funil: "Demanda potencial B2B · público qualificado",
+    perfil: "Segmenta por cargo, empresa e setor. Público caro, mas altamente qualificado (decisores B2B). Traz previsibilidade e escala para prospecção por perfil.",
+    caracteristicas: [
+      "CPM e CPC bem mais altos que Meta e Google",
+      "PORÉM a taxa de conversão e a qualidade do lead costumam ser maiores",
+      "Ideal para B2B, ticket alto e ciclo de venda mais longo",
+      "Compensa quando o valor do cliente (LTV) justifica o custo por lead"
+    ],
+    sinais: [
+      { metrica: "CPM alto", leitura: "Esperado no LinkedIn. Só faz sentido se a conversão/qualidade compensar — meça pelo custo por lead QUALIFICADO (MQL/SQL), nunca pelo CPM sozinho." },
+      { metrica: "Poucos leads, mas bons", leitura: "Normal em B2B de nicho. Avalie pelo valor do cliente (LTV) e pela taxa de fechamento, não pelo volume." },
+      { metrica: "CTR baixo", leitura: "O feed corporativo é mais 'sério'. Teste copy direta ao cargo e formatos como Lead Gen Form e documento." }
+    ]
+  }
+];
+
+/* -------------------------------------------------------------------------
+   6) CARDS DE ESTUDO — o modo de teste (flashcards).
+   Você lê a pergunta, tenta responder de cabeça, revela e se avalia.
+   Acertou: ótimo. Errou: ótimo também — vai para a lista de revisão.
+   Para adicionar: inclua { curso, pergunta, resposta } aqui.
+   ------------------------------------------------------------------------- */
+const CARDS_ESTUDO = [
+  { curso: "Chuva de Vendas", pergunta: "O que é um Lead?", resposta: "Alguém que preencheu um formulário (os dados de uma pessoa). É binário: ou é lead, ou não é." },
+  { curso: "Chuva de Vendas", pergunta: "Qual a diferença entre MQL e SQL?", resposta: "MQL é o lead com o perfil que buscamos (qualificado pelo marketing). SQL é quando o interesse foi validado e ele está pronto para vendas." },
+  { curso: "Chuva de Vendas", pergunta: "O que significa BANT e para que serve?", resposta: "Budget, Autoridade, Necessidade e Timing — 4 informações validadas na pré-venda antes de marcar a reunião." },
+  { curso: "Chuva de Vendas", pergunta: "Lead qualificado é o mesmo que lead quente?", resposta: "Não. Qualificado é sobre PERFIL; quente é sobre TEMPERATURA (momento). Um lead qualificado pode estar frio." },
+  { curso: "Chuva de Vendas", pergunta: "O que caracteriza um lead frio?", resposta: "Não sabe que tem o problema (topo de funil). Tem o perfil certo, mas é mais difícil levar para uma call e vender." },
+  { curso: "Chuva de Vendas", pergunta: "O que é demanda real e como se capta?", resposta: "Quem já busca a solução (fundo de funil). Captada tipicamente por Google Ads, comprando a palavra-chave." },
+  { curso: "Chuva de Vendas", pergunta: "Qual o maior problema da demanda real?", resposta: "Falta de previsibilidade e alta concorrência — sozinha, não gera uma operação de vendas escalável." },
+  { curso: "Chuva de Vendas", pergunta: "O que é demanda potencial?", resposta: "Leads com o perfil certo, mas fora do momento de compra. Exigem função consultiva para serem levados ao fundo de funil." },
+  { curso: "Chuva de Vendas", pergunta: "Qual erro o 'demonstrador' comete?", resposta: "Foca no produto e na ferramenta. Ninguém quer saber do seu produto — as pessoas querem resolver o próprio problema." },
+  { curso: "Chuva de Vendas", pergunta: "A venda deve ser pautada em quê?", resposta: "No cliente e no problema dele — NÃO na solução." },
+  { curso: "Chuva de Vendas", pergunta: "O que ganha a venda: a melhor oferta ou a mais clara?", resposta: "A oferta mais CLARA. Clareza gera maior taxa de conversão." },
+  { curso: "Chuva de Vendas", pergunta: "Qual a diferença entre problema e dor?", resposta: "Problema é o obstáculo; dor é o que se sente no dia a dia. A dor é o que faz o lead agir." },
+  { curso: "Chuva de Vendas", pergunta: "Por que 'nunca trazer uma dor nova'?", resposta: "As dores devem vir do próprio lead (escuta ativa). Você trabalha em cima do que ele trouxe, não inventa dores." },
+  { curso: "Chuva de Vendas", pergunta: "Para que serve o rapport na reunião?", resposta: "Criar conexão com o lead. Quanto mais conexão, mais ele te ouve e mais vê sentido na sua oferta." },
+  { curso: "Chuva de Vendas", pergunta: "O que é a 'Maneira 2.0'?", resposta: "Fazer o lead explicar o próprio negócio (histórico, objetivos, dores) e anotar tudo para usar depois a favor dele." }
+];
